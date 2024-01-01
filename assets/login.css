@@ -1,0 +1,29 @@
+﻿main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+h2 {
+    top: 242px;
+}
+
+header {
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 50px 0;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+footer {
+    margin-top: 355px;
+}
+
+.formulaire a, .formulaire a:hover, .formulaire a:active {
+    color: black;
+}
