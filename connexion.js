@@ -1,12 +1,13 @@
-const boutonSoumission = document.querySelector("#connecter");
+//  Gestion du formulaire de connexion
+const soumissionForm = document.querySelector("#formConnexion");
 const champsCourriel = document.querySelector("#courriel");
 const champsMdp = document.querySelector("#mdp");
 
 let etatConnexion = true;
 
-boutonSoumission.addEventListener("submit", (event) => {
+soumissionForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    connexionAdmin();
+    gererConnexionAdmin();
 });
 
 //  Écoute la saisie du courriel en vérifiant le format et désactivant la soumission tant que le format est incorrect
@@ -18,28 +19,20 @@ champsCourriel.addEventListener("change", () => {
 
     if (!testCourriel) {
         champsCourriel.classList.add("erreurSaisie");
-        boutonSoumission.setAttribute("disabled", "true");
+        soumissionForm.setAttribute("disabled", "true");
     }
     else {
-        boutonSoumission.removeAttribute("disabled");
+        soumissionForm.removeAttribute("disabled");
     }
 })
 
-/*champsMdp.addEventListener("change", () => {
-
-})*/
-
-async function connexionAdmin() {
-    console.log("On est dans connexionAdmin");
-
+async function gererConnexionAdmin() {
     localStorage.removeItem("token");
 
     const donneesConnexion = {
         "email": champsCourriel.value,
         "password": champsMdp.value
     }
-
-    console.log("On a : courriel = " + champsCourriel.value + " et mot de passe = " + champsMdp.value);
 
     try {
         const connexion = await fetch("http://localhost:5678/api/users/login", {
@@ -51,10 +44,15 @@ async function connexionAdmin() {
         const reponseConnexion = await connexion.json();
 
         localStorage.setItem("token", reponseConnexion.token);
+
+        document.location = "index.html";
     }
     catch (Erreur) {
-        console.log("La connexion à échouer\r\nVous devez ne pas avoir le droit de vous connecter");
-    }
+        const msgAlerte = document.createElement("p");
 
-    console.log("On est dans connexionAdmin\n\rtoken = " + localStorage.getItem("token"));
+        msgAlerte.setAttribute("style", "color: red; font-weight: 700;");
+        msgAlerte.innerText = "La connexion à échouer\r\nVous devez ne pas avoir le droit de vous connecter<br />";
+
+        soumissionForm.appendChild(msgAlerte);
+    }
 }

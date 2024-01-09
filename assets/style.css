@@ -74,7 +74,7 @@ body {
 
 header {
     display: flex;
-    flex-direction: column;    
+    flex-direction: column;
 }
 
 .headerCommun {
@@ -196,6 +196,7 @@ li:hover {
         display: block;
         margin: auto;
         width: 80%;
+        top: 231px;
     }
 
     #introduction article {
@@ -208,6 +209,10 @@ li:hover {
 
     #introduction p {
         margin-bottom: 0.5em;
+    }
+
+    #portfolio {
+        margin-top: 139px;
     }
 
 #portfolio h2 {
@@ -227,6 +232,7 @@ li:hover {
 
     .gallery img {
         width: 100%;
+        margin: 0 0 7px 0;
     }
 
 .formulaire {
@@ -256,7 +262,7 @@ input {
         height: 36px;
         text-align: center;
         border-radius: 60px;
-        border: none;
+        border: none;                    
     }
 
 label {
@@ -288,13 +294,15 @@ label {
         box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
     }
 
-#modifier {
+.modifierPhotos {
     display: inline-block;
 }
 
-.modifierPhotos {
+.btn_modifPhoto {
     display: flex;
-    gap: 10.42px
+    gap: 10.42px;
+    border: none;
+    background-color: transparent;
 }
 
 footer {
@@ -312,7 +320,20 @@ footer {
     }
 
 .statutEdition {
-    background-color: black;
     display: flex;
     justify-content: center;
+    align-items: center;
+    column-gap: 11.42px;
+    font-size: 16px;
+    background-color: black;
+    height: 59px;
+    color: white;
+}
+
+.invisibilite {
+    visibility: hidden;
+}
+
+.compensation {
+    margin-top: -59px;
 }
