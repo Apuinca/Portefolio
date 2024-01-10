@@ -48,8 +48,6 @@ function getSource() {
 function genererVignettes(listeATraiter) {
     vignettes.innerHTML = "";
 
-    let projets = Array.from(listeATraiter);
-
     for (let i = 0; i < listeATraiter.length; i++) {
         genererHTML(listeATraiter[i]);
     }
@@ -192,5 +190,7 @@ function gererAccueilConnectee() {
 const bouton = document.querySelector(".btn_modifPhoto");
 
 bouton.addEventListener("click", () => {
+    localStorage.setItem("galerie", vignettes.innerHTML);
+
     initModale(vignettes.innerHTML);
 });

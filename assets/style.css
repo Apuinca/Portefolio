@@ -242,13 +242,14 @@ li:hover {
     align-items: center;
 }
 
-input {
-    height: 50px;
+input, select {
+    height: 51px;
     font-size: 1.2em;
     border: none;
     margin: 0 0 8px 0;
     box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
     width: 379px;
+    background-color: white;
 }
 
     input[type="submit"] {

@@ -1,4 +1,4 @@
-/*  Style de la fenêtre */
+ /*  Style de la fenêtre */
 .fenetreModale {
     border: none;
     border-radius: 10px;
@@ -28,9 +28,13 @@ dialog input[type="submit"] {
     margin: 0;
 }
 
+    dialog input[disabled="true"] {
+        background-color: #A7A7A7;
+    }
+
 .menu {
     display: flex;
-    margin: 26px 30px 26px 0;
+    margin: 26px 30px 26px 30px;
     justify-content: space-between;
 }
 
@@ -56,10 +60,33 @@ dialog input[type="submit"] {
     position: relative;
 }
 
-    .miniatures {
-        width: 78px;
-        height: 105px;
-    }
+.labelTexteAjout {
+    margin: 17px 0 10px 0;
+}
+
+.contenuFenetre form {
+    margin-top: 0px;
+}
+
+#formAjoutProj {
+    margin-top: 0;
+}
+
+#textesAjout {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 9px 0 0 0;
+}
+
+.contenuFenetre input, .contenuFenetre select {
+    width: 420px;
+}
+
+.miniatures {
+    width: 78px;
+    height: 105px;
+}
 
 .iconeEffacer {
     display: flex;
@@ -80,6 +107,45 @@ dialog input[type="submit"] {
     height: 11px;
 }
 
+#btnNouvProj {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #CBD6DC;
+    color: #306685;
+    border-radius: 50px;
+    width: 173px;
+    height: 36px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    margin: 0;
+}
+
+#chargerImage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: none;
+    background-color: #E8F1F6;
+    color: #444;
+    width: 420px;
+    height: 169px;
+    padding: 6px 0 0 0;
+    row-gap: 7px;
+}
+
+.imageSelectionnee {
+    margin-top: -5px;
+}
+
+.photoSelectionnee {
+    width: 129px;
+}
+
+input[type="file"] {
+    display: none;
+}
 
 /* bas de boîte de dialogue */
 .piedModale {
