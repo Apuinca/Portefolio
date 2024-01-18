@@ -285,7 +285,6 @@ label {
 
     #contact form {
         text-align: left;
-        margin-top: 30px;
         display: flex;
         flex-direction: column;
     }

@@ -16,7 +16,7 @@
         color: var(--vert_olive);
         font-size: 26px;
         font-weight: 400;
-        margin-top: 60px;
+        margin-top: 10px;
     }
 
     .fenetreModale::backdrop {
@@ -34,7 +34,7 @@ dialog input[type="submit"] {
 
 .menu {
     display: flex;
-    margin: 26px 30px 26px 30px;
+    margin: 26px 30px 10px 30px;
     justify-content: space-between;
 }
 
@@ -48,7 +48,8 @@ dialog input[type="submit"] {
     column-gap: 7.5px;
     row-gap: 26.98px;
     flex-wrap: wrap;
-    margin: 46px 105px;
+    padding: 46px 100px;
+    overflow: scroll;
 }
 
 .iconeEffacer > img {

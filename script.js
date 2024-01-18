@@ -147,7 +147,6 @@ function gererAccueilConnectee() {
     const logInOut = document.querySelector("#logInOut");
     const zoneFiltres = document.querySelector(".filtres");
     const modeEntete = document.querySelector("header");
-
     const zoneModifier = document.querySelector(".modifierPhotos");
 
     //let balisesFiltre = "";
@@ -193,4 +192,6 @@ bouton.addEventListener("click", () => {
     localStorage.setItem("galerie", vignettes.innerHTML);
 
     initModale(vignettes.innerHTML);
+
+    init();
 });

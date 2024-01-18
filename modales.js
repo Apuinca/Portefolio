@@ -1,9 +1,13 @@
 const fenetreModale = document.querySelector(".fenetreModale");
 const titre = document.querySelector(".fenetreModale h1");
 const zoneContenu = document.querySelector(".contenuFenetre");
-const boutonModif = document.querySelector(".piedModale input");
-const retour = document.querySelector("#retour");
+const boutonModif = document.querySelector(".piedModale input");    //  Bouton de validation de la fenêtre modale
+const retour = document.querySelector("#retour");                   //  Flèche de navigation arrière
 
+let imageNouvProjet;    //  Variable de temporisation pour l'image d'un nouveau projet à enregistrer
+
+//  Création de la fenêtre modale contenant une partie dynamique et une partie fixe
+//  Prend en paramètre la galerie de photo (issue de la page d'accueil)
 export function initModale(affichageVignettes) {
     zoneContenu.innerHTML = "";
     zoneContenu.innerHTML = affichageVignettes;
@@ -12,7 +16,7 @@ export function initModale(affichageVignettes) {
 
     for (const figure of figures) {
         figure.childNodes[0].classList.add("miniatures");
-        figure.removeChild(figure.childNodes[1]);
+        figure.removeChild(figure.childNodes[1]);   //  Ici, on a pas besoin de la légende des photos des projets
         creerBoutonEffacer(figure);
     }
 
@@ -25,24 +29,17 @@ export function initModale(affichageVignettes) {
 
 function boutonAction() {
     boutonModif.addEventListener("click", (e) => {
-        console.log("On est dans boutonModif.addEventListener\r\n" + e.target.value);
-        /*if (e.target.value === "Ajouter une photo") {*/
-        modaleAjout();
-        //}
-        //else {
-
-        //};
+        if (e.target.value === "Ajouter une photo") {
+            modaleAjout();
+        }
+        else if (e.target.value === "Valider") {
+            enregistrerProjet();
+            fenetreModale.close();
+        };
     });
 }
 
-function fermerModale() {
-    const fermerFenetreModale = document.querySelector("#fermeture");
-
-    fermerFenetreModale.addEventListener("click", () => {
-        fenetreModale.close();
-    });
-}
-
+//  Création des icones de suppression des projets
 function creerBoutonEffacer(baliseParent) {
     const conteneurImgEffacer = document.createElement("p");
     const imgEffacer = document.createElement("img");
@@ -56,30 +53,30 @@ function creerBoutonEffacer(baliseParent) {
 
     baliseParent.appendChild(conteneurImgEffacer);
 
-    baliseParent.addEventListener("click", (e) => {
+    baliseParent.addEventListener("click", (e) => {    
+        const idProjetAEffacer = e.currentTarget.childNodes[0].classList[0];
         try {
-            fetch('http://localhost:5678/api/works', {
+            fetch(`http://localhost:5678/api/works/${idProjetAEffacer}`, {
                 method: "DELETE",
-                body: e.currentTarget.childNodes[0].classList[0],
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem("token"),                
+                },
+                body: idProjetAEffacer,
             });
         }
-        catch {
+        catch (error) {
             const msgAlerte = document.createElement("p");
 
             msgAlerte.setAttribute("style", "color: red; font-weight: 700;");
-            msgAlerte.innerText = "La connexion à échouer\r\nVous devez ne pas avoir le droit de vous connecter<br />";
+            msgAlerte.innerText = "La connexion à échouer<br />Vous devez ne pas avoir le droit de vous connecter<br />" + error;
 
             zoneContenu.appendChild(msgAlerte);
         }
     });
 }
 
-async function modaleAjout() {
-    titre.innerText = "Ajout photo";
-    retour.classList.remove("invisibilite");
-    boutonModif.setAttribute("value", "Valider");
-    boutonModif.setAttribute("disabled", "true");
-
+function modaleAjout() {
+    //  Constitution du formulaire de création d'un projet
     zoneContenu.innerHTML = `<form id="formAjoutProj">
                                 <div id="chargerImage">
                                     <img src="./assets/icons/iconePhoto.png" alt="iconeImage" />
@@ -90,11 +87,11 @@ async function modaleAjout() {
                                     </label>                        
                                     <p>jpg, png : 4mo max</p>
                                     <div class="imageSelectionnee">
-                                    </div>
-                                </div >
+                                    </div>                           
+                                </div >                                
                                 <div id="textesAjout">
                                     <label for="titre" class="labelTexteAjout">Titre</label>
-                                    <input type="text" required/>
+                                    <input name="titreProjet" type="text" class="nomProjet" required/>
                                     <label for="choisirCategorie" class="labelTexteAjout">Cat&eacute;gorie</label>
                                     <select name="choisirCategorie" class="choixCategorie" required>
                                         <option value="0"></option>
@@ -102,6 +99,31 @@ async function modaleAjout() {
                                 </div>
                             </form >`;
 
+    titre.innerText = "Ajout photo";
+    retour.classList.remove("invisibilite");
+    boutonModif.setAttribute("value", "Valider");
+    boutonModif.setAttribute("disabled", "true");
+
+    recupererCategories();
+
+    telechargerPhoto();
+
+    retour.addEventListener("click", () => {
+        retourPage("ajoutPhoto");
+    });
+
+    zoneContenu.addEventListener("change", () => {
+        const imageProjet = document.querySelector("#chargerImage");
+        const nomProjet = document.querySelector(".nomProjet");
+        const categorieProjet = document.querySelector(".choixCategorie");
+
+        if (nomProjet.value != "" && categorieProjet.value > 0) {
+            boutonModif.removeAttribute("disabled");
+        }
+    });
+}
+
+async function recupererCategories() {
     try {
         const recupCategories = await fetch('http://localhost:5678/api/categories', {
             method: "GET",
@@ -113,40 +135,67 @@ async function modaleAjout() {
         const listeCategories = await recupCategories.json();
         const listeOptions = document.querySelector(".choixCategorie");
 
-        for (const categorie of listeCategories) {            
+        for (const categorie of listeCategories) {
             const valCategorie = document.createElement("option");
             valCategorie.setAttribute("value", categorie.id);
             valCategorie.innerText = categorie.name;
 
             listeOptions.appendChild(valCategorie);
-        }        
+        }
     }
     catch {
         console.log("Oups! Liste des catégories pas récupérée");
     }
+}
 
-    const choixPhoto = document.getElementById("imageNouvProj");
-    const photoChoisie = document.querySelector(".imageSelectionnee");
+function telechargerPhoto() {
+    const zoneImage = document.querySelector("#chargerImage");
+    const choixPhoto = document.querySelector("#imageNouvProj");
 
     choixPhoto.addEventListener("change", (e) => {
-        const zoneImage = document.querySelector("#chargerImage");
-        const toto = document.querySelector("input[type=file]").files[0];
+        const fichierImage = document.querySelector("input[type=file]").files[0];
+        const photoChoisie = document.querySelector(".imageSelectionnee");
 
-        console.log(toto);
+        imageNouvProjet = fichierImage;
 
-        //photoChoisie.innerHTML = `<img src="${toto.value}" alt="${toto.name}" class="photoSelectionnee" />`;
-        console.log("choixPhoto.addEventListener\r\nchoixPhoto : " + e.target.result);
+
+
+        photoChoisie.innerHTML = `<img src="${URL.createObjectURL(fichierImage)}" alt="${fichierImage.name}" class="photoSelectionnee" />`;
+        console.log("choixPhoto.addEventListener\r\nchoixPhoto : " + URL.createObjectURL(fichierImage));
 
         zoneImage.innerHTML = "";
         zoneImage.appendChild(photoChoisie);
-        
-    });
-   
-    retour.addEventListener("click", () => {
-        retourPage("ajoutPhoto");
     });
 }
 
+async function enregistrerProjet() {
+    try {
+        const nomProjet = document.querySelector(".nomProjet");
+        const categorieProjet = document.querySelector(".choixCategorie");
+
+        const ajoutProjet = new FormData();
+
+        console.log("imageNouvProjet = " + imageNouvProjet);
+
+        ajoutProjet.append("image", imageNouvProjet);
+        ajoutProjet.append("title", nomProjet.value);
+        ajoutProjet.append("category", parseInt(categorieProjet.value));
+
+        await fetch('http://localhost:5678/api/works', {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem("token"),
+                "Accept": "application/json",
+            },
+            body: ajoutProjet,
+        });
+    }
+    catch (error) {
+        console.log("enregistrerProjet KO\r\n", error);
+    }
+}
+
+//  Fonctions de navigation
 function retourPage(etape) {
     zoneContenu.innerHTML = "";
 
@@ -161,4 +210,12 @@ function retourPage(etape) {
     else if (etape === "ajoutPhotoValide") {
         modaleAjout();
     }
+}
+
+function fermerModale() {
+    const fermerFenetreModale = document.querySelector("#fermeture");
+
+    fermerFenetreModale.addEventListener("click", () => {
+        fenetreModale.close();
+    });
 }
