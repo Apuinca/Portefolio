@@ -9,7 +9,15 @@ let imageNouvProjet;    //  Variable de temporisation pour l'image d'un nouveau 
 //  Création de la fenêtre modale contenant une partie dynamique et une partie fixe
 //  Prend en paramètre la galerie de photo (issue de la page d'accueil)
 export function initModale(affichageVignettes) {
+
+    //  Rénitialisation pour le cas où on a fermer la fenêtre modale depuis la page d'ajout de projet
     zoneContenu.innerHTML = "";
+    titre.innerText = "Galerie photos";
+    boutonModif.value = "Ajouter une photo";
+    boutonModif.removeAttribute("disabled");
+    retour.classList.add("invisibilite");
+    //
+
     zoneContenu.innerHTML = affichageVignettes;
 
     const figures = document.querySelectorAll(".contenuFenetre figure");
@@ -29,10 +37,11 @@ export function initModale(affichageVignettes) {
 
 function boutonAction() {
     boutonModif.addEventListener("click", (e) => {
+        console.log("bouton action = " + e.target.classList.contains("disabled"));
         if (e.target.value === "Ajouter une photo") {
             modaleAjout();
         }
-        else if (e.target.value === "Valider") {
+        else if (e.target.value === "Valider" && e.target.getAttribute("disabled") == "false") {
             enregistrerProjet();
             fenetreModale.close();
         };
@@ -76,6 +85,8 @@ function creerBoutonEffacer(baliseParent) {
 }
 
 function modaleAjout() {
+    console.log("On est dans modaleAjout");
+
     //  Constitution du formulaire de création d'un projet
     zoneContenu.innerHTML = `<form id="formAjoutProj">
                                 <div id="chargerImage">
@@ -157,8 +168,6 @@ function telechargerPhoto() {
         const photoChoisie = document.querySelector(".imageSelectionnee");
 
         imageNouvProjet = fichierImage;
-
-
 
         photoChoisie.innerHTML = `<img src="${URL.createObjectURL(fichierImage)}" alt="${fichierImage.name}" class="photoSelectionnee" />`;
         console.log("choixPhoto.addEventListener\r\nchoixPhoto : " + URL.createObjectURL(fichierImage));

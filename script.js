@@ -142,21 +142,20 @@ function modifierBoutonActif(idxBouton) {
     }
 }
 
+//  Configure la page d'accueil suite à la connexion de l'utilisateur
 function gererAccueilConnectee() {
     const zoneMain = document.querySelector("main");
     const logInOut = document.querySelector("#logInOut");
     const zoneFiltres = document.querySelector(".filtres");
     const modeEntete = document.querySelector("header");
-    const zoneModifier = document.querySelector(".modifierPhotos");
-
-    //let balisesFiltre = "";
+    const zoneModifier = document.querySelector(".modifierPhotos"); //  Bouton d'affichage ouvrant la fenêtre modale
 
     if (!localStorage.getItem("token")) {        
         zoneModifier.classList.add("invisibilite");
 
         logInOut.innerText = "login";
     }
-    else {
+    else {    
         const iconeEnteteEdition = document.createElement("i");
         const texteEnteteEdition = document.createElement("p");
         const entete = document.querySelector(".headerCommun");
@@ -171,17 +170,21 @@ function gererAccueilConnectee() {
         //  Fait apparaitre le bouton de lancement de modification
         zoneModifier.classList.remove("invisibilite");
 
-        iconeEnteteEdition.setAttribute("color", "white");
+        iconeEnteteEdition.style.color = "white";
         iconeEnteteEdition.classList.add("fa-regular", "fa-pen-to-square");
 
-        texteEnteteEdition.innerHTML = "Mode &eacute;dition";
+    //  Création du bandeau signifiant qu'on est en mode édition
+        //  Empêche l'entassement du bandeau
+        if (texteEnteteEdition.innerHTML == "") {
+            texteEnteteEdition.innerHTML = "Mode &eacute;dition";
 
-        modeEdition.appendChild(iconeEnteteEdition);
-        modeEdition.appendChild(texteEnteteEdition);
-        modeEdition.classList.add("statutEdition");
+            modeEdition.appendChild(iconeEnteteEdition);
+            modeEdition.appendChild(texteEnteteEdition);
+            modeEdition.classList.add("statutEdition");
 
-        modeEntete.insertBefore(modeEdition, entete);
-
+            modeEntete.insertBefore(modeEdition, entete);
+        }
+    //
         zoneFiltres.innerHTML = "";
     }
 }
@@ -192,6 +195,4 @@ bouton.addEventListener("click", () => {
     localStorage.setItem("galerie", vignettes.innerHTML);
 
     initModale(vignettes.innerHTML);
-
-    init();
 });
