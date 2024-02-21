@@ -295,7 +295,7 @@ label {
     }
 
 .modifierPhotos {
-    display: inline-block;
+    display: inline-block;    
 }
 
 .btn_modifPhoto {
@@ -303,6 +303,7 @@ label {
     gap: 10.42px;
     border: none;
     background-color: transparent;
+    cursor: pointer;
 }
 
 footer {

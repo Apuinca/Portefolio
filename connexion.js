@@ -26,7 +26,10 @@ champsCourriel.addEventListener("change", () => {
     }
 })
 
-async function gererConnexionAdmin() {
+async function gererConnexionAdmin() {   
+    const msgAlerte = document.createElement("p");
+    msgAlerte.setAttribute("style", "color: red; font-weight: 700;");
+
     localStorage.removeItem("token");
 
     const donneesConnexion = {
@@ -43,14 +46,18 @@ async function gererConnexionAdmin() {
 
         const reponseConnexion = await connexion.json();
 
-        localStorage.setItem("token", reponseConnexion.token);
+        if (reponseConnexion.message !== "user not found") {
+            localStorage.setItem("token", reponseConnexion.token);
 
-        document.location = "index.html";
+            document.location = "index.html";
+        }
+        else {
+            msgAlerte.innerText = "Votre nom ou votre mot de passe sont incorrects";
+
+            soumissionForm.appendChild(msgAlerte);
+        }
     }
     catch (Erreur) {
-        const msgAlerte = document.createElement("p");
-
-        msgAlerte.setAttribute("style", "color: red; font-weight: 700;");
         msgAlerte.innerText = "La connexion à échouer\r\nVous devez ne pas avoir le droit de vous connecter<br />";
 
         soumissionForm.appendChild(msgAlerte);

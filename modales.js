@@ -184,8 +184,6 @@ async function enregistrerProjet() {
 
         const ajoutProjet = new FormData();
 
-        console.log("imageNouvProjet = " + imageNouvProjet);
-
         ajoutProjet.append("image", imageNouvProjet);
         ajoutProjet.append("title", nomProjet.value);
         ajoutProjet.append("category", parseInt(categorieProjet.value));
@@ -226,5 +224,13 @@ function fermerModale() {
 
     fermerFenetreModale.addEventListener("click", () => {
         fenetreModale.close();
+    });
+
+    document.addEventListener("click", (e) => {
+        let horsModale = fenetreModale.contains(e.target);
+
+        if (!horsModale) {
+            fenetreModale.close();
+        }
     });
 }
