@@ -8,7 +8,7 @@ let imageNouvProjet;    //  Variable de temporisation pour l'image d'un nouveau 
 
 //  Création de la fenêtre modale contenant une partie dynamique et une partie fixe
 //  Prend en paramètre la galerie de photo (issue de la page d'accueil)
-export function initModale(affichageVignettes) {
+export function initModale() {
 
     //  Rénitialisation pour le cas où on a fermer la fenêtre modale depuis la page d'ajout de projet
     zoneContenu.innerHTML = "";
@@ -16,23 +16,37 @@ export function initModale(affichageVignettes) {
     boutonModif.value = "Ajouter une photo";
     boutonModif.removeAttribute("disabled");
     retour.classList.add("invisibilite");
-    //
-
-    zoneContenu.innerHTML = affichageVignettes;
-
-    const figures = document.querySelectorAll(".contenuFenetre figure");
-
-    for (const figure of figures) {
-        figure.childNodes[0].classList.add("miniatures");
-        figure.removeChild(figure.childNodes[1]);   //  Ici, on a pas besoin de la légende des photos des projets
-        creerBoutonEffacer(figure);
-    }
+    //    
 
     boutonAction();
+
+    rafraichirMiniatures();
 
     fermerModale();
 
     fenetreModale.showModal();
+}
+
+async function rafraichirMiniatures() {
+    const enregLogements = await fetch('http://localhost:5678/api/works');
+    const listeLogement = await enregLogements.json();
+
+    console.log("On est dans rafraichirMiniatures")
+
+    for (let i = 0; i < listeLogement.length; i++) {
+        const baliseFigure = document.createElement("figure");
+        const baliseImg = document.createElement("img");
+
+        baliseImg.src = listeLogement[i].imageUrl;
+        baliseImg.alt = listeLogement[i].title;
+        baliseImg.classList.add(listeLogement[i].id, "miniatures");
+
+        zoneContenu.appendChild(baliseFigure);
+        baliseFigure.appendChild(baliseImg);
+        zoneContenu.appendChild(baliseFigure);
+
+        creerBoutonEffacer(baliseFigure);
+    }
 }
 
 function boutonAction() {
@@ -41,9 +55,9 @@ function boutonAction() {
         if (e.target.value === "Ajouter une photo") {
             modaleAjout();
         }
-        else if (e.target.value === "Valider" && e.target.getAttribute("disabled") == "false") {
+        else if (e.target.value === "Valider" && !e.target.getAttribute("disabled")) {
             enregistrerProjet();
-            fenetreModale.close();
+            initModale();
         };
     });
 }
@@ -72,12 +86,14 @@ function creerBoutonEffacer(baliseParent) {
                 },
                 body: idProjetAEffacer,
             });
+
+            initModale();
         }
         catch (error) {
             const msgAlerte = document.createElement("p");
 
             msgAlerte.setAttribute("style", "color: red; font-weight: 700;");
-            msgAlerte.innerText = "La connexion à échouer<br />Vous devez ne pas avoir le droit de vous connecter<br />" + error;
+            msgAlerte.innerText = "La suppression a échoueé<br />" + error;
 
             zoneContenu.appendChild(msgAlerte);
         }
@@ -177,8 +193,10 @@ function telechargerPhoto() {
     });
 }
 
-async function enregistrerProjet() {
+function enregistrerProjet() {
     try {
+        console.log("On est dans enregistrerProjet()");
+
         const nomProjet = document.querySelector(".nomProjet");
         const categorieProjet = document.querySelector(".choixCategorie");
 
@@ -188,7 +206,7 @@ async function enregistrerProjet() {
         ajoutProjet.append("title", nomProjet.value);
         ajoutProjet.append("category", parseInt(categorieProjet.value));
 
-        await fetch('http://localhost:5678/api/works', {
+        fetch('http://localhost:5678/api/works', {
             method: "POST",
             headers: {
                 "Authorization": "Bearer " + localStorage.getItem("token"),
@@ -196,6 +214,8 @@ async function enregistrerProjet() {
             },
             body: ajoutProjet,
         });
+
+        console.log("enregistrerProjet() terminé"); 
     }
     catch (error) {
         console.log("enregistrerProjet KO\r\n", error);
@@ -224,13 +244,5 @@ function fermerModale() {
 
     fermerFenetreModale.addEventListener("click", () => {
         fenetreModale.close();
-    });
-
-    document.addEventListener("click", (e) => {
-        let horsModale = fenetreModale.contains(e.target);
-
-        if (!horsModale) {
-            fenetreModale.close();
-        }
-    });
+    });    
 }

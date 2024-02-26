@@ -192,7 +192,5 @@ function gererAccueilConnectee() {
 const bouton = document.querySelector(".btn_modifPhoto");
 
 bouton.addEventListener("click", () => {
-    localStorage.setItem("galerie", vignettes.innerHTML);
-
-    initModale(vignettes.innerHTML);
+    initModale();
 });
