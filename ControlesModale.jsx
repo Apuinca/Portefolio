@@ -15,6 +15,7 @@ export function creerBoutonEffacer(baliseParent) {
 	baliseParent.appendChild(conteneurImgEffacer);
 
 	baliseParent.addEventListener("click", (e) => {
+		e.preventDefault();
 		const idProjetAEffacer = e.currentTarget.childNodes[0].classList[0];
 		try {
 			fetch(`http://localhost:5678/api/works/${idProjetAEffacer}`, {
@@ -36,7 +37,7 @@ export function creerBoutonEffacer(baliseParent) {
 	});
 }
 
-export function retourPage(etape) {
+export async function retourPage(etape) {
 	zoneContenu.innerHTML = "";
 
 	if (etape === "ajoutPhoto") {
@@ -45,7 +46,7 @@ export function retourPage(etape) {
 		retour.classList.add("invisibilite");
 		titre.innerText = "Galerie photo";
 
-		initModale();
+		await initModale();
 	}
 	else if (etape === "ajoutPhotoValide") {
 		modaleAjout();
@@ -57,6 +58,7 @@ export function fermerModale() {
 	const fenetreModale = document.querySelector(".fenetreModale");
 
 	fermerFenetreModale.addEventListener("click", (e) => {
+		e.preventDefault();
 		fenetreModale.close();
 	});
 }

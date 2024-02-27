@@ -1,6 +1,7 @@
 import { initModale } from "./modales.js";
 
 const etatConnexion = document.querySelector("#logInOut");
+const modale = document.querySelector(".fenetreModale");
 
 //  Récupération de la zone des photos
 const vignettes = document.querySelector(".gallery");
@@ -11,21 +12,21 @@ const btn_objets = document.querySelector("#objets");
 const btn_apparts = document.querySelector("#apparts");
 const btn_hotels = document.querySelector("#hotels");
 
-init();
+await init();
 
 async function init() {
-    const travaux = await getSource();
-    const listeProjets = await travaux.json();
+    const ensembleProjets = await getSource();
 
     gererLogInOut();
-    genererVignettes(listeProjets);
-    gererFiltres(listeProjets);
+    genererVignettes(ensembleProjets);
+    gererFiltres(ensembleProjets);
     gererAccueilConnectee();
 }
 
 function gererLogInOut() {
-    etatConnexion.addEventListener("click", () => {
+    etatConnexion.addEventListener("click", (e) => {
         if (etatConnexion.innerText == "logout") {
+            
             localStorage.removeItem("token");
 
             etatConnexion.innerText = "login";
@@ -37,9 +38,12 @@ function gererLogInOut() {
     });
 }
 
-function getSource() {
+async function getSource() {
     try {
-        return fetch('http://localhost:5678/api/works');
+        const travaux = await fetch('http://localhost:5678/api/works');
+        const listeProjets = await travaux.json();
+
+        return listeProjets;
     } catch (error) {
         alert("Problème de réponse API :\r\n" + error);
     }
@@ -76,15 +80,25 @@ function genererHTML(enregistrement) {
     vignettes.appendChild(baliseFigure);
 }
 
+function miseAJourGalerie() {
+    modale.addEventListener("close", async (e) => {
+        e.preventDefault();
+
+        genererVignettes(await getSource());
+    });
+}
+
 function gererFiltres(travaux) {
     const projetsAFiltrer = Array.from(travaux);
 
     btn_tout.addEventListener("click", (event) => {
+        event.preventDefault();
         genererVignettes(travaux);
         modifierBoutonActif("tout");
     });
 
     btn_objets.addEventListener("click", (event) => {
+        event.preventDefault();
         const listeObjets = projetsAFiltrer.filter((projet) => {
             return projet.categoryId === 1;
         });
@@ -94,6 +108,7 @@ function gererFiltres(travaux) {
     });
 
     btn_apparts.addEventListener("click", (event) => {
+        event.preventDefault();
         const listeApparts = projetsAFiltrer.filter((projet) => {
             return projet.categoryId === 2;
 
@@ -104,6 +119,7 @@ function gererFiltres(travaux) {
     });
 
     btn_hotels.addEventListener("click", (event) => {
+        event.preventDefault();
         const listeHotelsRestos = projetsAFiltrer.filter((projet) => {
             return projet.categoryId === 3;
 
@@ -150,6 +166,8 @@ function gererAccueilConnectee() {
     const modeEntete = document.querySelector("header");
     const zoneModifier = document.querySelector(".modifierPhotos"); //  Bouton d'affichage ouvrant la fenêtre modale
 
+    console.log("On est dans gererAccueilConnectee");
+
     if (!localStorage.getItem("token")) {        
         zoneModifier.classList.add("invisibilite");
 
@@ -187,10 +205,14 @@ function gererAccueilConnectee() {
     //
         zoneFiltres.innerHTML = "";
     }
+
+    miseAJourGalerie();
 }
 
-const bouton = document.querySelector(".btn_modifPhoto");
+const boutonModifier = document.querySelector(".btn_modifPhoto");
 
-bouton.addEventListener("click", () => {
-    initModale();
+boutonModifier.addEventListener("click", async (event) => {
+    event.preventDefault();
+
+    await initModale();
 });

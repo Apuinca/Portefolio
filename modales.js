@@ -8,7 +8,7 @@ let imageNouvProjet;    //  Variable de temporisation pour l'image d'un nouveau 
 
 //  Création de la fenêtre modale contenant une partie dynamique et une partie fixe
 //  Prend en paramètre la galerie de photo (issue de la page d'accueil)
-export function initModale() {
+export async function initModale() {
 
     //  Rénitialisation pour le cas où on a fermer la fenêtre modale depuis la page d'ajout de projet
     zoneContenu.innerHTML = "";
@@ -20,7 +20,7 @@ export function initModale() {
 
     boutonAction();
 
-    rafraichirMiniatures();
+    await rafraichirMiniatures();
 
     fermerModale();
 
@@ -50,14 +50,15 @@ async function rafraichirMiniatures() {
 }
 
 function boutonAction() {
-    boutonModif.addEventListener("click", (e) => {
+    boutonModif.addEventListener("click", async (e) => {
+        e.preventDefault();
         console.log("bouton action = " + e.target.classList.contains("disabled"));
         if (e.target.value === "Ajouter une photo") {
-            modaleAjout();
+            await modaleAjout();
         }
         else if (e.target.value === "Valider" && !e.target.getAttribute("disabled")) {
-            enregistrerProjet();
-            initModale();
+            await enregistrerProjet();
+            await initModale();
         };
     });
 }
@@ -76,10 +77,11 @@ function creerBoutonEffacer(baliseParent) {
 
     baliseParent.appendChild(conteneurImgEffacer);
 
-    baliseParent.addEventListener("click", (e) => {    
+    baliseParent.addEventListener("click", async (e) => {    
+        e.preventDefault();
         const idProjetAEffacer = e.currentTarget.childNodes[0].classList[0];
         try {
-            fetch(`http://localhost:5678/api/works/${idProjetAEffacer}`, {
+            await fetch(`http://localhost:5678/api/works/${idProjetAEffacer}`, {
                 method: "DELETE",
                 headers: {
                     "Authorization": "Bearer " + localStorage.getItem("token"),                
@@ -87,7 +89,7 @@ function creerBoutonEffacer(baliseParent) {
                 body: idProjetAEffacer,
             });
 
-            initModale();
+            await initModale();
         }
         catch (error) {
             const msgAlerte = document.createElement("p");
@@ -100,7 +102,7 @@ function creerBoutonEffacer(baliseParent) {
     });
 }
 
-function modaleAjout() {
+async function modaleAjout() {
     console.log("On est dans modaleAjout");
 
     //  Constitution du formulaire de création d'un projet
@@ -131,15 +133,17 @@ function modaleAjout() {
     boutonModif.setAttribute("value", "Valider");
     boutonModif.setAttribute("disabled", "true");
 
-    recupererCategories();
+    await recupererCategories();
 
     telechargerPhoto();
 
-    retour.addEventListener("click", () => {
-        retourPage("ajoutPhoto");
+    retour.addEventListener("click", async (e) => {
+        e.preventDefault();
+        await retourPage("ajoutPhoto");
     });
 
-    zoneContenu.addEventListener("change", () => {
+    zoneContenu.addEventListener("change", (e) => {
+        e.preventDefault();
         const imageProjet = document.querySelector("#chargerImage");
         const nomProjet = document.querySelector(".nomProjet");
         const categorieProjet = document.querySelector(".choixCategorie");
@@ -180,6 +184,7 @@ function telechargerPhoto() {
     const choixPhoto = document.querySelector("#imageNouvProj");
 
     choixPhoto.addEventListener("change", (e) => {
+        e.preventDefault();
         const fichierImage = document.querySelector("input[type=file]").files[0];
         const photoChoisie = document.querySelector(".imageSelectionnee");
 
@@ -193,7 +198,7 @@ function telechargerPhoto() {
     });
 }
 
-function enregistrerProjet() {
+async function enregistrerProjet() {
     try {
         console.log("On est dans enregistrerProjet()");
 
@@ -206,7 +211,7 @@ function enregistrerProjet() {
         ajoutProjet.append("title", nomProjet.value);
         ajoutProjet.append("category", parseInt(categorieProjet.value));
 
-        fetch('http://localhost:5678/api/works', {
+        await fetch('http://localhost:5678/api/works', {
             method: "POST",
             headers: {
                 "Authorization": "Bearer " + localStorage.getItem("token"),
@@ -223,7 +228,7 @@ function enregistrerProjet() {
 }
 
 //  Fonctions de navigation
-function retourPage(etape) {
+async function retourPage(etape) {
     zoneContenu.innerHTML = "";
 
     if (etape === "ajoutPhoto") {
@@ -232,17 +237,18 @@ function retourPage(etape) {
         retour.classList.add("invisibilite");
         titre.innerText = "Galerie photo";
 
-        initModale(localStorage.getItem("galerie"));
+        await initModale(localStorage.getItem("galerie"));
     }
     else if (etape === "ajoutPhotoValide") {
-        modaleAjout();
+        await modaleAjout();
     }
 }
 
 function fermerModale() {
     const fermerFenetreModale = document.querySelector("#fermeture");
 
-    fermerFenetreModale.addEventListener("click", () => {
+    fermerFenetreModale.addEventListener("click", (e) => {
+        e.preventDefault();
         fenetreModale.close();
     });    
 }

@@ -5,13 +5,14 @@ const champsMdp = document.querySelector("#mdp");
 
 let etatConnexion = true;
 
-soumissionForm.addEventListener("submit", (event) => {
+soumissionForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    gererConnexionAdmin();
+    await gererConnexionAdmin();
 });
 
 //  Écoute la saisie du courriel en vérifiant le format et désactivant la soumission tant que le format est incorrect
-champsCourriel.addEventListener("change", () => {
+champsCourriel.addEventListener("change", (event) => {
+    event.preventDefault();
     let modele = new RegExp("[a-zA-Z0-9.\-]+@[a-zA-Z0-9.\-]+\.[a-z]{2,3}");
     let testCourriel = modele.test(champsCourriel.value);
 
@@ -26,7 +27,8 @@ champsCourriel.addEventListener("change", () => {
     }
 })
 
-async function gererConnexionAdmin() {   
+async function gererConnexionAdmin() {
+    console.log("gererConnexionAdmin");
     const msgAlerte = document.createElement("p");
     msgAlerte.setAttribute("style", "color: red; font-weight: 700;");
 
