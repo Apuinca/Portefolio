@@ -248,7 +248,12 @@ function fermerModale() {
     const fermerFenetreModale = document.querySelector("#fermeture");
 
     fermerFenetreModale.addEventListener("click", (e) => {
-        e.preventDefault();
         fenetreModale.close();
     });    
+
+    fenetreModale.addEventListener("click", (e) => {
+        if (e.target == fenetreModale) {
+            fenetreModale.close();
+        }
+    });
 }
