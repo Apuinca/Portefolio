@@ -1,7 +1,7 @@
 const fenetreModale = document.querySelector(".fenetreModale");
 const titre = document.querySelector(".fenetreModale h1");
 const zoneContenu = document.querySelector(".contenuFenetre");
-const boutonModif = document.querySelector(".piedModale input");    //  Bouton de validation de la fenêtre modale
+const boutonModif = document.querySelector(".piedModale");    //  Bouton de validation de la fenêtre modale
 const retour = document.querySelector("#retour");                   //  Flèche de navigation arrière
 
 let imageNouvProjet;    //  Variable de temporisation pour l'image d'un nouveau projet à enregistrer
@@ -12,13 +12,25 @@ export async function initModale() {
 
     //  Rénitialisation pour le cas où on a fermer la fenêtre modale depuis la page d'ajout de projet
     zoneContenu.innerHTML = "";
+    boutonModif.innerHTML = "";
     titre.innerText = "Galerie photos";
-    boutonModif.value = "Ajouter une photo";
-    boutonModif.removeAttribute("disabled");
-    retour.classList.add("invisibilite");
-    //    
 
-    boutonAction();
+    const barre = document.createElement("hr");
+    const bouton = document.createElement("input");
+
+    bouton.setAttribute("type", "submit");
+    bouton.setAttribute("value", "Ajouter une photo");
+
+    boutonModif.appendChild(barre);
+    boutonModif.appendChild(bouton);
+
+    retour.classList.add("invisibilite");
+
+    boutonModif.addEventListener("click", async (e) => {
+        e.preventDefault();
+        await modaleAjout();
+    }
+    );
 
     await rafraichirMiniatures();
 
@@ -49,20 +61,6 @@ async function rafraichirMiniatures() {
     }
 }
 
-function boutonAction() {
-    boutonModif.addEventListener("click", async (e) => {
-        e.preventDefault();
-        console.log("bouton action = " + e.target.classList.contains("disabled"));
-        if (e.target.value === "Ajouter une photo") {
-            await modaleAjout();
-        }
-        else if (e.target.value === "Valider" && !e.target.getAttribute("disabled")) {
-            await enregistrerProjet();
-            await initModale();
-        };
-    });
-}
-
 //  Création des icones de suppression des projets
 function creerBoutonEffacer(baliseParent) {
     const conteneurImgEffacer = document.createElement("p");
@@ -77,14 +75,14 @@ function creerBoutonEffacer(baliseParent) {
 
     baliseParent.appendChild(conteneurImgEffacer);
 
-    baliseParent.addEventListener("click", async (e) => {    
+    baliseParent.addEventListener("click", async (e) => {
         e.preventDefault();
         const idProjetAEffacer = e.currentTarget.childNodes[0].classList[0];
         try {
             await fetch(`http://localhost:5678/api/works/${idProjetAEffacer}`, {
                 method: "DELETE",
                 headers: {
-                    "Authorization": "Bearer " + localStorage.getItem("token"),                
+                    "Authorization": "Bearer " + sessionStorage.getItem("token"),
                 },
                 body: idProjetAEffacer,
             });
@@ -105,6 +103,8 @@ function creerBoutonEffacer(baliseParent) {
 async function modaleAjout() {
     console.log("On est dans modaleAjout");
 
+    
+
     //  Constitution du formulaire de création d'un projet
     zoneContenu.innerHTML = `<form id="formAjoutProj">
                                 <div id="chargerImage">
@@ -121,22 +121,29 @@ async function modaleAjout() {
                                 <div id="textesAjout">
                                     <label for="titre" class="labelTexteAjout">Titre</label>
                                     <input name="titreProjet" type="text" class="nomProjet" required/>
-                                    <label for="choisirCategorie" class="labelTexteAjout">Cat&eacute;gorie</label>
-                                    <select name="choisirCategorie" class="choixCategorie" required>
-                                        <option value="0"></option>
-                                    </select>
+                                    <label for="choisirCategorie" class="labelTexteAjout">Cat&eacute;gorie</label>                                    
                                 </div>
                             </form >`;
-
-    titre.innerText = "Ajout photo";
-    retour.classList.remove("invisibilite");
-    boutonModif.setAttribute("value", "Valider");
-    boutonModif.setAttribute("disabled", "true");
 
     await recupererCategories();
 
     telechargerPhoto();
 
+    boutonModif.innerHTML = "";
+
+    const ajoutPhoto = document.createElement("input");
+    const barre = document.createElement("hr");
+
+    titre.innerText = "Ajout photo";
+    retour.classList.remove("invisibilite");
+
+    ajoutPhoto.setAttribute("type", "submit");
+    ajoutPhoto.setAttribute("value", "Valider");
+    ajoutPhoto.setAttribute("disabled", "true");
+
+    boutonModif.appendChild(barre);
+    boutonModif.appendChild(ajoutPhoto);
+    
     retour.addEventListener("click", async (e) => {
         e.preventDefault();
         await retourPage("ajoutPhoto");
@@ -148,8 +155,16 @@ async function modaleAjout() {
         const nomProjet = document.querySelector(".nomProjet");
         const categorieProjet = document.querySelector(".choixCategorie");
 
+        console.dir(imageProjet);
+
         if (nomProjet.value != "" && categorieProjet.value > 0) {
-            boutonModif.removeAttribute("disabled");
+            ajoutPhoto.removeAttribute("disabled");
+
+            ajoutPhoto.addEventListener("click", async (e) => {
+                e.preventDefault();
+                await enregistrerProjet();
+                await initModale();
+            })
         }
     });
 }
@@ -164,15 +179,30 @@ async function recupererCategories() {
         })
 
         const listeCategories = await recupCategories.json();
-        const listeOptions = document.querySelector(".choixCategorie");
+        const listeOptions = document.querySelector("#textesAjout");
+
+        const comboBoxCat = document.createElement("select");
+
+        comboBoxCat.setAttribute("name", "choisirCategorie");
+        comboBoxCat.setAttribute("required", "true");
+        comboBoxCat.classList.add("choixCategorie");
+
+        const defautChoix = document.createElement("option");
+
+        defautChoix.setAttribute("value", "0");
+        defautChoix.innerText = "Choisir une catégorie";
+
+        comboBoxCat.appendChild(defautChoix);
 
         for (const categorie of listeCategories) {
             const valCategorie = document.createElement("option");
             valCategorie.setAttribute("value", categorie.id);
             valCategorie.innerText = categorie.name;
 
-            listeOptions.appendChild(valCategorie);
+            comboBoxCat.appendChild(valCategorie);
         }
+
+        listeOptions.appendChild(comboBoxCat);
     }
     catch {
         console.log("Oups! Liste des catégories pas récupérée");
@@ -214,20 +244,20 @@ async function enregistrerProjet() {
         await fetch('http://localhost:5678/api/works', {
             method: "POST",
             headers: {
-                "Authorization": "Bearer " + localStorage.getItem("token"),
+                "Authorization": "Bearer " + sessionStorage.getItem("token"),
                 "Accept": "application/json",
             },
             body: ajoutProjet,
         });
 
-        console.log("enregistrerProjet() terminé"); 
+        console.log("enregistrerProjet() terminé");
     }
     catch (error) {
         console.log("enregistrerProjet KO\r\n", error);
     }
 }
 
-//  Fonctions de navigation
+//Fonctions de navigation
 async function retourPage(etape) {
     zoneContenu.innerHTML = "";
 
@@ -237,7 +267,7 @@ async function retourPage(etape) {
         retour.classList.add("invisibilite");
         titre.innerText = "Galerie photo";
 
-        await initModale(localStorage.getItem("galerie"));
+        await initModale(sessionStorage.getItem("galerie"));
     }
     else if (etape === "ajoutPhotoValide") {
         await modaleAjout();
@@ -249,7 +279,7 @@ function fermerModale() {
 
     fermerFenetreModale.addEventListener("click", (e) => {
         fenetreModale.close();
-    });    
+    });
 
     fenetreModale.addEventListener("click", (e) => {
         if (e.target == fenetreModale) {

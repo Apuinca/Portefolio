@@ -45,11 +45,11 @@ dialog input[type="submit"] {
 /* Style de la partie dynamique de la fenêtre */
 .contenuFenetre {
     display: flex;
-    height: 356px;
+    height: 369px;
     column-gap: 7.5px;
-    row-gap: 26.98px;
+    row-gap: 27px;
     flex-wrap: wrap;
-    padding: 46px 100px;
+    margin: 46px 100px;
     overflow: scroll;
 }
 

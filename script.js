@@ -14,8 +14,13 @@ const btn_hotels = document.querySelector("#hotels");
 
 await init();
 
+//sessionStorage.removeItem("token");
+
+
 async function init() {
     const ensembleProjets = await getSource();
+
+    
 
     gererLogInOut();
     genererVignettes(ensembleProjets);
@@ -27,7 +32,7 @@ function gererLogInOut() {
     etatConnexion.addEventListener("click", (e) => {
         if (etatConnexion.innerText == "logout") {
             
-            localStorage.removeItem("token");
+            sessionStorage.removeItem("token");
 
             etatConnexion.innerText = "login";
             etatConnexion.setAttribute("href", "index.html");
@@ -168,7 +173,7 @@ function gererAccueilConnectee() {
 
     console.log("On est dans gererAccueilConnectee");
 
-    if (!localStorage.getItem("token")) {        
+    if (!sessionStorage.getItem("token")) {        
         zoneModifier.classList.add("invisibilite");
 
         logInOut.innerText = "login";

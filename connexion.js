@@ -32,7 +32,7 @@ async function gererConnexionAdmin() {
     const msgAlerte = document.createElement("p");
     msgAlerte.setAttribute("style", "color: red; font-weight: 700;");
 
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
 
     const donneesConnexion = {
         "email": champsCourriel.value,
@@ -49,7 +49,7 @@ async function gererConnexionAdmin() {
         const reponseConnexion = await connexion.json();
 
         if (reponseConnexion.message !== "user not found") {
-            localStorage.setItem("token", reponseConnexion.token);
+            sessionStorage.setItem("token", reponseConnexion.token);
 
             document.location = "index.html";
         }
