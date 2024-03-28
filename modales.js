@@ -43,8 +43,6 @@ async function rafraichirMiniatures() {
     const enregLogements = await fetch('http://localhost:5678/api/works');
     const listeLogement = await enregLogements.json();
 
-    console.log("On est dans rafraichirMiniatures")
-
     for (let i = 0; i < listeLogement.length; i++) {
         const baliseFigure = document.createElement("figure");
         const baliseImg = document.createElement("img");
@@ -53,11 +51,21 @@ async function rafraichirMiniatures() {
         baliseImg.alt = listeLogement[i].title;
         baliseImg.classList.add(listeLogement[i].id, "miniatures");
 
-        zoneContenu.appendChild(baliseFigure);
+        //zoneContenu.appendChild(baliseFigure);
         baliseFigure.appendChild(baliseImg);
         zoneContenu.appendChild(baliseFigure);
 
         creerBoutonEffacer(baliseFigure);
+    }
+
+    //  Assure l'ecart entre les 2 premiere lignes lorqu'on a moins de 11 photos
+    if (listeLogement.length <= 10) {
+        for (let i = 0; i < 11 - listeLogement.length; i++) {
+            const baliseFigure = document.createElement("figure");
+
+            baliseFigure.classList.add("miniatures");
+            zoneContenu.appendChild(baliseFigure);
+        }
     }
 }
 

@@ -46,11 +46,10 @@ dialog input[type="submit"] {
 .contenuFenetre {
     display: flex;
     height: 369px;
-    column-gap: 7.5px;
-    row-gap: 27px;
     flex-wrap: wrap;
     margin: 46px 100px;
     overflow: scroll;
+    gap: 27px 7.5px;
 }
 
 .iconeEffacer > img {
@@ -87,7 +86,7 @@ dialog input[type="submit"] {
 
 .miniatures {
     width: 78px;
-    height: 105px;
+    height: 103px;
 }
 
 .iconeEffacer {
