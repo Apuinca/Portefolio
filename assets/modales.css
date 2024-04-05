@@ -1,4 +1,4 @@
- /*  Style de la fenêtre */
+/*  Style de la fenêtre */
 .fenetreModale {
     border: none;
     border-radius: 10px;
@@ -28,9 +28,13 @@ dialog input[type="submit"] {
     margin: 0;
 }
 
-    dialog input[disabled="true"] {
-        background-color: #A7A7A7;
-    }
+dialog input[disabled="true"] {
+    background-color: #A7A7A7;
+}
+
+.limiteTaille {
+    font-size: 10px;
+}
 
 .menu {
     display: flex;
@@ -45,43 +49,46 @@ dialog input[type="submit"] {
 /* Style de la partie dynamique de la fenêtre */
 .contenuFenetre {
     display: flex;
-    height: 369px;
     flex-wrap: wrap;
-    margin: 46px 100px;
+    margin: 46px 95px;
     overflow: scroll;
     gap: 27px 7.5px;
+    width: 450px;
 }
+
+    .contenuFenetre > figure {
+        position: relative;
+    }
+
+    .contenuFenetre form {
+        margin-top: 0px;
+        width: 100%;
+        align-items: center;
+    }
+
+    .contenuFenetre input, .contenuFenetre select {
+        width: 420px;
+        font-size: 14px;
+        padding: 0;
+        margin-top: -8px;
+    }
 
 .iconeEffacer > img {
     width: 9px;
     height: 11px;
 }
 
-.contenuFenetre > figure {
-    position: relative;
-}
-
 .labelTexteAjout {
-    margin: 17px 0 10px 0;
-}
-
-.contenuFenetre form {
-    margin-top: 0px;
-}
-
-#formAjoutProj {
-    margin-top: 0;
+    margin: 0px 0 -7px 0;
+    padding: 1px 0;
 }
 
 #textesAjout {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    padding: 9px 0 0 0;
-}
-
-.contenuFenetre input, .contenuFenetre select {
-    width: 420px;
+    padding-top: 30px;
+    row-gap: 18px;
 }
 
 .miniatures {
@@ -128,16 +135,20 @@ dialog input[type="submit"] {
     flex-direction: column;
     align-items: center;
     border: none;
+    border-radius: 3px;
     background-color: #E8F1F6;
     color: #444;
     width: 420px;
     height: 169px;
-    padding: 6px 0 0 0;
     row-gap: 7px;
 }
 
 .imageSelectionnee {
     margin-top: -5px;
+}
+
+.iconeImage {
+    padding-top: 13px;
 }
 
 .photoSelectionnee {

@@ -1,8 +1,11 @@
+import { genererVignettes } from './script.js';
+
 const fenetreModale = document.querySelector(".fenetreModale");
 const titre = document.querySelector(".fenetreModale h1");
 const zoneContenu = document.querySelector(".contenuFenetre");
 const boutonModif = document.querySelector(".piedModale");    //  Bouton de validation de la fenêtre modale
 const retour = document.querySelector("#retour");                   //  Flèche de navigation arrière
+const vignettes = document.querySelector(".gallery");
 
 let imageNouvProjet;    //  Variable de temporisation pour l'image d'un nouveau projet à enregistrer
 
@@ -11,7 +14,6 @@ let imageNouvProjet;    //  Variable de temporisation pour l'image d'un nouveau 
 export async function initModale() {
 
     //  Rénitialisation pour le cas où on a fermer la fenêtre modale depuis la page d'ajout de projet
-    zoneContenu.innerHTML = "";
     boutonModif.innerHTML = "";
     titre.innerText = "Galerie photos";
 
@@ -29,8 +31,7 @@ export async function initModale() {
     boutonModif.addEventListener("click", async (e) => {
         e.preventDefault();
         await modaleAjout();
-    }
-    );
+    });
 
     await rafraichirMiniatures();
 
@@ -39,9 +40,15 @@ export async function initModale() {
     fenetreModale.showModal();
 }
 
+//  Modifie à la volée le contenu des miniatures de la modale et la galerie de la page principale
 async function rafraichirMiniatures() {
     const enregLogements = await fetch('http://localhost:5678/api/works');
     const listeLogement = await enregLogements.json();
+
+    zoneContenu.innerHTML = "";
+
+    //  Modification de la page principale
+    genererVignettes(listeLogement, vignettes);
 
     for (let i = 0; i < listeLogement.length; i++) {
         const baliseFigure = document.createElement("figure");
@@ -111,18 +118,16 @@ function creerBoutonEffacer(baliseParent) {
 async function modaleAjout() {
     console.log("On est dans modaleAjout");
 
-    
-
     //  Constitution du formulaire de création d'un projet
     zoneContenu.innerHTML = `<form id="formAjoutProj">
                                 <div id="chargerImage">
-                                    <img src="./assets/icons/iconePhoto.png" alt="iconeImage" />
+                                    <img class="iconeImage" src="./assets/icons/iconePhoto.png" alt="iconeImage" />
                                     <label for="imageNouvProj" id="btnNouvProj">
                                         + Ajouter photo
                                         <br />
                                         <input id="imageNouvProj" type="file" accept=".jpg;.png" required/>                            
                                     </label>                        
-                                    <p>jpg, png : 4mo max</p>
+                                    <p class="limiteTaille">jpg, png : 4mo max</p>
                                     <div class="imageSelectionnee">
                                     </div>                           
                                 </div >                                
@@ -151,7 +156,7 @@ async function modaleAjout() {
 
     boutonModif.appendChild(barre);
     boutonModif.appendChild(ajoutPhoto);
-    
+
     retour.addEventListener("click", async (e) => {
         e.preventDefault();
         await retourPage("ajoutPhoto");
@@ -188,29 +193,33 @@ async function recupererCategories() {
 
         const listeCategories = await recupCategories.json();
         const listeOptions = document.querySelector("#textesAjout");
+        const comboBoxCat = document.querySelector("select");
 
-        const comboBoxCat = document.createElement("select");
+        if (comboBoxCat === null) {
+            console.log("comboBoxCat est nul");
+            const comboBoxCat = document.createElement("select");
 
-        comboBoxCat.setAttribute("name", "choisirCategorie");
-        comboBoxCat.setAttribute("required", "true");
-        comboBoxCat.classList.add("choixCategorie");
+            comboBoxCat.setAttribute("name", "choisirCategorie");
+            comboBoxCat.setAttribute("required", "true");
+            comboBoxCat.classList.add("choixCategorie");
 
-        const defautChoix = document.createElement("option");
+            const defautChoix = document.createElement("option");
 
-        defautChoix.setAttribute("value", "0");
-        defautChoix.innerText = "Choisir une catégorie";
+            defautChoix.setAttribute("value", "0");
+            defautChoix.innerText = "";
 
-        comboBoxCat.appendChild(defautChoix);
+            comboBoxCat.appendChild(defautChoix);
 
-        for (const categorie of listeCategories) {
-            const valCategorie = document.createElement("option");
-            valCategorie.setAttribute("value", categorie.id);
-            valCategorie.innerText = categorie.name;
+            for (const categorie of listeCategories) {
+                const valCategorie = document.createElement("option");
+                valCategorie.setAttribute("value", categorie.id);
+                valCategorie.innerText = categorie.name;
 
-            comboBoxCat.appendChild(valCategorie);
+                comboBoxCat.appendChild(valCategorie);
+            }
+
+            listeOptions.appendChild(comboBoxCat);
         }
-
-        listeOptions.appendChild(comboBoxCat);
     }
     catch {
         console.log("Oups! Liste des catégories pas récupérée");

@@ -18,12 +18,10 @@ await init();
 
 
 async function init() {
-    const ensembleProjets = await getSource();
-
-    
+    const ensembleProjets = await getSource();    
 
     gererLogInOut();
-    genererVignettes(ensembleProjets);
+    genererVignettes(ensembleProjets, vignettes);
     gererFiltres(ensembleProjets);
     gererAccueilConnectee();
 }
@@ -54,8 +52,8 @@ async function getSource() {
     }
 }
 
-function genererVignettes(listeATraiter) {
-    vignettes.innerHTML = "";
+export function genererVignettes(listeATraiter, zoneInsert) {
+    zoneInsert.innerHTML = "";
 
     for (let i = 0; i < listeATraiter.length; i++) {
         genererHTML(listeATraiter[i]);
@@ -89,7 +87,7 @@ function miseAJourGalerie() {
     modale.addEventListener("close", async (e) => {
         e.preventDefault();
 
-        genererVignettes(await getSource());
+        genererVignettes(await getSource(), vignettes);
     });
 }
 
@@ -98,7 +96,7 @@ function gererFiltres(travaux) {
 
     btn_tout.addEventListener("click", (event) => {
         event.preventDefault();
-        genererVignettes(travaux);
+        genererVignettes(travaux, vignettes);
         modifierBoutonActif("tout");
     });
 
@@ -108,7 +106,7 @@ function gererFiltres(travaux) {
             return projet.categoryId === 1;
         });
 
-        genererVignettes(listeObjets);
+        genererVignettes(listeObjets, vignettes);
         modifierBoutonActif("objets");
     });
 
@@ -119,7 +117,7 @@ function gererFiltres(travaux) {
 
         });
 
-        genererVignettes(listeApparts);
+        genererVignettes(listeApparts, vignettes);
         modifierBoutonActif("apparts");
     });
 
@@ -130,7 +128,7 @@ function gererFiltres(travaux) {
 
         });
 
-        genererVignettes(listeHotelsRestos);
+        genererVignettes(listeHotelsRestos, vignettes);
         modifierBoutonActif("hotels");
     });
 }
